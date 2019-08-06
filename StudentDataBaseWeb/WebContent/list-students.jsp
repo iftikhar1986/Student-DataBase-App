@@ -54,10 +54,17 @@ List<Student> theStudents = (List<Student>) request.getAttribute("STUDENT_LIST")
 				<c:forEach var="tempStudent" items="${STUDENT_LIST}">
 
 					<!-- SetUp a link for each student -->
-
 					<c:url var="templink" value="StudentController">
 
 						<c:param name="command" value="LOAD" />
+						<c:param name="studentId" value="${tempStudent.id }" />
+
+					</c:url>
+					
+					<!-- SetUp a link to Delete a student -->
+					<c:url var="deletelink" value="StudentController">
+
+						<c:param name="command" value="DELETE" />
 						<c:param name="studentId" value="${tempStudent.id }" />
 
 					</c:url>
@@ -66,7 +73,15 @@ List<Student> theStudents = (List<Student>) request.getAttribute("STUDENT_LIST")
 						<td>${tempStudent.firstName }</td>
 						<td>${tempStudent.lastName }</td>
 						<td>${tempStudent.email }</td>
-						<td><a href="${templink}">Update</a></td>
+						<td>
+						
+						<a href="${templink}">Update</a>
+						|
+						<a href="${deletelink}"
+						   onclick="if(!(confirm('Are You Sure TO Delete this Student?')))return false">Delete</a>
+						
+						
+						</td>
 					</tr>
 
 

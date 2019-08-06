@@ -126,9 +126,117 @@ public class StudentDAO {
 
 	}
 
-	public Student getStudents(String theStudentId) {
+	public Student getStudents(String theStudentId) throws Exception {
 
-		return null;
+		Student theStudent = null;
+		Connection myConn = null;
+		PreparedStatement myStmt = null;
+		ResultSet myRs = null;
+
+		int studentId;
+
+		try {
+			// Convert Student Id to int
+			studentId = Integer.parseInt(theStudentId);
+
+			// Get Connection to the DataBase
+			myConn = dataSource.getConnection();
+
+			// Create SQL to get selected student
+			String sql = "SELECT * FROM student where id=?";
+
+			// Create Prepared statement
+			myStmt = myConn.prepareStatement(sql);
+
+			// Set Parameters
+			myStmt.setInt(1, studentId);
+
+			// Excute Statement
+			myRs = myStmt.executeQuery();
+
+			// Retrive Data from result set Row
+			if (myRs.next()) {
+				String firstName = myRs.getString("first_name");
+				String lastName = myRs.getString("last_name");
+				String email = myRs.getString("email");
+
+				// Using the StudentId during construction
+				theStudent = new Student(studentId, firstName, lastName, email);
+			} else {
+				throw new Exception("Could Not find the student id: "
+						+ studentId);
+			}
+			return theStudent;
+
+		} finally {
+			close(myConn, myStmt, myRs);
+		}
+
+	}
+
+	public void updateStudent(Student theStudent) throws Exception {
+
+		Connection myConn = null;
+		PreparedStatement myStmt = null;
+
+		try {
+
+			// Get DB Connection
+			myConn = dataSource.getConnection();
+
+			// Creat SQL Statement
+			String sql = "update student "
+					+ "set first_name=?, last_name=?, email=? " + "where id=?";
+
+			// Prepare Statement
+			myStmt = myConn.prepareStatement(sql);
+
+			// Set Statement
+			myStmt.setString(1, theStudent.getFirstName());
+			myStmt.setString(2, theStudent.getLastName());
+			myStmt.setString(3, theStudent.getEmail());
+			myStmt.setInt(4, theStudent.getId());
+
+			// Excute SQL Statement
+			myStmt.execute();
+
+		} finally {
+			close(myConn, myStmt, null);
+		}
+
+	}
+
+	public void deleteStudent(String theStudentId) throws Exception {
+
+		Connection myConn = null;
+		PreparedStatement myStmt = null;
+
+		try {
+
+			// Convert student id to int
+			int studentId = Integer.parseInt(theStudentId);
+
+			// Get Connection to dataBase
+			myConn = dataSource.getConnection();
+
+			// Create sql to Delete student
+			String sql = "DELETE FROM student where id=?";
+
+			// Prepare Statement
+			myStmt = myConn.prepareStatement(sql);
+
+			// Set Param
+
+			myStmt.setInt(1, studentId);
+
+			// Excute SQL Statement
+			myStmt.execute();
+
+		} finally {
+			// Clean Up JDBC Code
+			close(myConn, myStmt, null);
+		}
+
 	}
 
 }
